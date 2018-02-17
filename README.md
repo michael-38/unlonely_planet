@@ -1,29 +1,25 @@
-# Node Skeleton
+# Tweeter Project
 
-## Project Setup
+Tweeter is a simple, single-page Twitter clone by leveraging HTML, CSS, JS, jQuery, and AJAX for the front-end, and Node, Express, and MongoDB for the back-end.
 
-1. Create your own empty repo on GitHub
-2. Clone this repository (do not fork)
-  - Suggestion: When cloning, specify a different folder name that is relevant to your project
-3. Remove the git remote: `git remote rm origin`
-4. Add a remote for your origin: `git remote add origin <your github repo URL>`
-5. Push to the new origin: `git push -u origin master`
-6. Verify that the skeleton code now shows up in your repo on GitHub
 
-## Getting Started
+## Final Product
 
-1. Create the `.env` by using `.env.example` as a reference: `cp .env.example .env`
-2. Update the .env file with your correct local information
-3. Install dependencies: `npm i`
-4. Fix to binaries for sass: `npm rebuild node-sass`
-5. Run migrations: `npm run knex migrate:latest`
-  - Check the migrations folder to see what gets created in the DB
-6. Run the seed: `npm run knex seed:run`
-  - Check the seeds file to see what gets seeded in the DB
-7. Run the server: `npm run local`
-8. Visit `http://localhost:8080/`
+!["Home Page"](https://github.com/michael-38/tweeter/blob/master/docs/home_page.png)
+!["Composing a Tweet"](https://github.com/michael-38/tweeter/blob/master/docs/compose_tweet.png)
+!["Submitted Tweet"](https://github.com/michael-38/tweeter/blob/master/docs/submit_tweet.png)
+
 
 ## Dependencies
 
+- Express
 - Node 5.10.x or above
-- NPM 3.8.x or above
+- Knex
+- Bootstrap 4.0.0
+- PostgreSQL 6.0.2
+
+
+## Getting Started
+- Install all dependencies (using the `npm install` command).
+- Run the web server (using the `npm start` command).
+- Enjoy!
