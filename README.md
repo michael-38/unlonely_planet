@@ -1,17 +1,18 @@
-# Tweeter Project
+# unLonely Planet
 
-Tweeter is a simple, single-page Twitter clone by leveraging HTML, CSS, JS, jQuery, and AJAX for the front-end, and Node, Express, and MongoDB for the back-end.
+unLonely Planet is a simple app that allows users to view/create customized maps using their own collection of locations/pins.
 
 
 ## Final Product
 
-!["Home Page"](https://github.com/michael-38/tweeter/blob/master/docs/home_page.png)
-!["Composing a Tweet"](https://github.com/michael-38/tweeter/blob/master/docs/compose_tweet.png)
-!["Submitted Tweet"](https://github.com/michael-38/tweeter/blob/master/docs/submit_tweet.png)
+!["Home Page"](https://github.com/michael-38/unlonely_planet/blob/master/docs/home_page.png)
+!["View Saved Map"](https://github.com/michael-38/unlonely_planet/blob/master/docs/view_saved_map.png)
+!["Create Custom Map"](https://github.com/michael-38/unlonely_planet/blob/master/docs/create_custom_map.png)
 
 
 ## Dependencies
 
+- Google Maps API (https://developers.google.com/maps/documentation/javascript)
 - Express
 - Node 5.10.x or above
 - Knex
