@@ -10,8 +10,6 @@ $(document).ready(function () {
 
 
 
-
-
   /* ----- Functions ----- */
 
   fontsize = function () {
@@ -21,9 +19,8 @@ $(document).ready(function () {
   // $(window).resize(fontsize);
 
 
-
-
   function initialRender() {
+    $(".sidebar_back").css("display", "none");
     let map = new google.maps.Map(document.getElementById('map'), {
       center: { lat: 30, lng: 0 },
       zoom: 2
@@ -38,8 +35,6 @@ $(document).ready(function () {
       center: mylatLng,
       zoom: 6 // this is from mapID
     }
-
-
 
     var bounds = new google.maps.LatLngBounds();
 
@@ -64,14 +59,6 @@ $(document).ready(function () {
         marker.addListener('click', function () {
           infoWindow.open(map, marker);
         });
-
-        // marker.addListener('mouseover', function () {
-        //   infowindow.open(map, marker);
-        // });
-
-        // marker.addListener('mouseout', function () {
-        //   infowindow.close();
-        // });
 
       })(i)
     }
@@ -210,6 +197,7 @@ $(document).ready(function () {
     // if(marker.image) {
     //   point_image = marker.image;
     // }
+
     pointElement = (`
       <article class="point_element" data-pointid="${escape(point_Id)}">
       <img class="location_pic" src="${point_image}">
@@ -251,8 +239,7 @@ $(document).ready(function () {
     $(".sidebar_title").append(mapHeader);
 
     console.log("list of markers to be rendered: " + obj.markers)
-    for (point of obj.markers) { // point is an object within an array
-      // console.log(point)
+    for (point of obj.markers) {
       $(".user_maps").append(createLocationElementPlus(point)); //render location elements to one of three div container: element_container(for hard-coded maps), user_maps(for user-created maps), favourite_maps(for favourited maps). The other 2 div will be empty
     }
   }
@@ -266,36 +253,14 @@ $(document).ready(function () {
     $(".sidebar_title").empty();
     $(".sidebar_title").append(mapHeader);
 
-    for (point of obj.markers) { // point is an object within an array
-      // console.log(point)
+    for (point of obj.markers) {
       $(".favourite_maps").append(createLocationElement(point)); //render location elements to one of three div container: element_container(for hard-coded maps), user_maps(for user-created maps), favourite_maps(for favourited maps). The other 2 div will be empty
     }
   }
 
 
-  // function renderLocationDetails(obj) {
-  //   let locationDescription = obj.markers.description;
-  //   let point_label = obj.markers.label;
-
-  //   let locationHeader = (`
-  //     <h1 class="header_text">${escape(point_label)}</h1>
-  //   `)
-
-  //   locationContent = (`
-  //   <p>${escape(locationDescription)}</p>
-  // `);
-  //   $(".sidebar_title").empty();
-  //   $(".panel_content").empty();
-  //   $(".sidebar_title").append(locationHeader);
-  //   $(".panel_content").append(locationContent);
-  // };
-
-
-
-
 
   /* ----- Event Listeners ----- */
-
 
   $('.reg').on('click', function (event) {
     $.ajax({
@@ -331,7 +296,6 @@ $(document).ready(function () {
         $('#reg-message').empty();
         $('.user_maps').empty();
         $('.favourite_maps').empty();
-        // $('.username, .password').val('');
         $('.logout').css('display', 'inline');
         $('.user_info').append(`<h4 id='custom'>Logged in as: ${profile.user}.</h4>`);
         renderUserMaps(profile);
@@ -344,11 +308,6 @@ $(document).ready(function () {
             renderMapElements(maps);
           }
         })
-        // } else {
-        //   $('#custom').css('display', 'inline');
-        //   renderUserMaps(profile);
-        //   renderFavouriteMaps(profile);
-        // }
       }
     })
   });
@@ -387,44 +346,56 @@ $(document).ready(function () {
   //on click (of "sidebar_back" button), render "home page"
   $(".sidebar_header").on('click', ".sidebar_back", function (event) {
     event.preventDefault();
-    $.ajax({
-      url: '/api/users/login',
-      method: 'POST',
-      data: {
-        name: $('.username').val(),
-        password: $('.password').val()
-      },
-      success: function (profile) {
-        $('.username').css("display", "none");
-        $('.password').css("display", "none");
-        $('.btn.login').css("display", "none");
-        $('.btn.reg').css("display", "none");
-        $('.element_container').empty();
-        $('#reg-message').empty();
-        $('.user_maps').empty();
-        $('.favourite_maps').empty();
-        // $('.username, .password').val('');
-        $('.logout').css('display', 'inline');
+    if (!$('.username').val() && !$('.password').val()) {
+      $(".create_map").css("display", "block");
+      $('.element_container').empty();
+      $('.user_maps').empty();
+      $('.favourite_maps').empty();
+      $.ajax({
+        url: '/maps',
+        method: 'GET',
+        success: function (maps) {
+          initialRender();
+          renderMapElements(maps);
+        }
+      })
+    } else {
+      $.ajax({
+        url: '/api/users/login',
+        method: 'POST',
+        data: {
+          name: $('.username').val(),
+          password: $('.password').val()
+        },
+        success: function (profile) {
+          $(".create_map").css("display", "block");
+          $('.username').css("display", "none");
+          $('.password').css("display", "none");
+          $('.btn.login').css("display", "none");
+          $('.btn.reg').css("display", "none");
+          $('.element_container').empty();
+          $('#reg-message').empty();
+          $('.user_maps').empty();
+          $('.favourite_maps').empty();
+          $('.logout').css('display', 'inline');
 
-        // console.log("profile:" + profile)
-        renderUserMaps(profile);
-        renderFavouriteMaps(profile);
-        $.ajax({
-          url: '/maps',
-          method: 'GET',
-          success: function (maps) {
-            initialRender();
-            renderMapElements(maps);
-          }
-        })
-      }
-    })
+          renderUserMaps(profile);
+          renderFavouriteMaps(profile);
+          $.ajax({
+            url: '/maps',
+            method: 'GET',
+            success: function (maps) {
+              initialRender();
+              renderMapElements(maps);
+            }
+          })
+        }
+      })
+    }
   })
 
 
-  //WORKINPROGRESS
   $('.element_container').on('click', '#favourite-map', function (event) {
-    // event.stopPropagation();
     event.preventDefault();
     console.log("clicked favourite")
     let mapID = $(event.target).closest('#mapidcarrier').data('mapid');
@@ -442,8 +413,6 @@ $(document).ready(function () {
   });
 
 
-
-
   //on click (of a hard-coded/seed map), render location elements and markers
   $('.element_container').on('click', ".map_element", function (event) {
     console.log("map of popular maps clicked")
@@ -457,7 +426,7 @@ $(document).ready(function () {
     console.log("mapID: " + mapID)
     $.ajax({
       method: "GET",
-      url: "/maps/search/" + mapID,// locations/points page
+      url: "/maps/search/" + mapID,
       success: function (map) {
         console.log("map (to success): " + map)
         initMapNoMarker(map);
@@ -480,11 +449,11 @@ $(document).ready(function () {
     console.log("mapID: " + mapID)
     $.ajax({
       method: "GET",
-      url: "/maps/search/" + mapID,// was /maps/edit (need to verify)
+      url: "/maps/search/" + mapID,
       success: function (map) {
         console.log("map (to success): " + map)
         initMapNoMarker(map);
-        renderUserLocationElements(map); //this will show list of locations along with edit/delete button for each element
+        renderUserLocationElements(map);
       }
     })
   })
@@ -501,7 +470,7 @@ $(document).ready(function () {
     let mapID = $(event.target).closest('article').data("mapid");
     $.ajax({
       method: "GET",
-      url: "/maps/search/" + mapID,// locations/points page
+      url: "/maps/search/" + mapID,
       success: function (map) {
         $('.element_container').empty();
         $('.user_maps').empty();
@@ -516,7 +485,12 @@ $(document).ready(function () {
 
   //on click (of "Create a Map" button), append/display form to sidebar
   $(".sidebar_header").on('click', ".create_map", function () {
-    // $(this).css("display", "none");
+    if (!$('.username').val() && !$('.password').val()) {
+      alert("Please Log In");
+    } else {
+
+    $(this).css("display", "none");
+    $('.sidebar_back').css("display", "block")
     $('.element_container').empty();
     $('.user_maps').empty();
     $('.favourite_maps').empty();
@@ -534,13 +508,13 @@ $(document).ready(function () {
       </div>
       `)
     $(".element_container").append(map_form);
+    }
   })
 
 
   //on click (of "Next" button), allow user to add markers, and display form for marker's details
   $(".element_container").on('click', ".next", function (event) {
     event.preventDefault();
-    // console.log($(".map_name").val())
     if ($(".map_name").val().length === 0) {
       alert("Please Enter Map Name")
     } else {
@@ -591,14 +565,10 @@ $(document).ready(function () {
 
 
   //on click (of "save marker" button), POST marker data to /marker 
-  //NEED TO VERIFY: if specific marker data will be added to the new map created
   $(".element_container").on('click', ".save_marker", function (event) {
     event.preventDefault();
 
-    // let mapID = $('#current-map').data("mapid"); //original
-    let mapID = $('.header_text').data("mapid"); // test
-    console.log(mapID);
-    // let pointID = $(event.target).closest('article').data("pointID");
+    let mapID = $('.header_text').data("mapid"); 
     $.ajax({
       method: "POST",
       url: "/maps/marker",
@@ -611,7 +581,7 @@ $(document).ready(function () {
         description: $(".marker_description").val(),
       },
       success: function () {
-        console.log(mapID)
+        console.log(mapID);
         console.log("marker name: " + $(".marker_name").val())
       }
     })
@@ -759,39 +729,6 @@ $(document).ready(function () {
   })
 
 
-  //THIS ROUTE NEEDS TO BE ADDED
-  //on click (of "delete favourite map" button), delete map
-  //then render/refresh "home page" 
-  // $('.favourite_maps').on('click', ".remove_favourite", function (event) {
-  //   $('.element_container').empty();
-  //   $(this).css("display", "none");
-
-  //   let mapID = $(event.target).closest('article').data("mapid");
-  //   $.ajax({
-  //     method: "DELETE",
-  //     url: "/maps/favourite/delete/" + mapID,// locations/points page
-  //     success: function (map) {
-  //       initialRender();
-  //       renderMapElements(maps);
-  //       renderFavouriteMaps(maps);
-  //       renderUserMaps(maps);
-  //     }
-  //   })
-  // })
-
-  //on click (of a specific location in a map), render location details
-  // $(".element_container").on('click', ".location_element", function () {
-  //   $('.element_container').empty(); // if needed
-  //   $('.sidebar_back').css("display", "block")
-  //   let pointID = $(event.target).closest('article').data("pointid");
-  //   $.ajax({
-  //     method: "GET",
-  //     url: "/maps/search/" + pointID, //  location details page
-  //     success: renderLocationDetails
-  //   })
-  // })
-
-
   //on click (of "cancel" button)
   //clear container, show list of maps page ("home page")
   $(".element_container").on('click', '.cancel_map', function (event) {
@@ -812,10 +749,8 @@ $(document).ready(function () {
         $('#reg-message').empty();
         $('.user_maps').empty();
         $('.favourite_maps').empty();
-        // $('.username, .password').val('');
         $('.logout').css('display', 'inline');
 
-        // console.log("profile:" + profile)
         renderUserMaps(profile);
         renderFavouriteMaps(profile);
         $.ajax({
@@ -830,12 +765,5 @@ $(document).ready(function () {
     })
   })
 
-
 }) //end of document.ready
 
-
-
-
-// To-dos
-// on mouseover, display marker's infoWindow 
-// on mouseleave, hide marker's infoWindow
